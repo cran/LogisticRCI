@@ -1,0 +1,8 @@
+9f19af1fc47b40adecbaf1a0c766ba87 *DESCRIPTION
+046835e316d118e7fcb7f6976a9599c2 *NAMESPACE
+380a9aa6f36ca4046d297c31db903f4d *R/RCI.R
+304680e5aa942409fe531b337bf47c68 *build/partial.rdb
+e37be765501ebe123f4179c05482f1f7 *data/RCI_sample_data.rda
+aa5aa0c8e30df2b386f861d810eaeffa *man/LogisticRCI-package.Rd
+e15edcc457c83a138ebed25147281565 *man/RCI.Rd
+abe21fe040948f8a36bcde5165adb115 *man/RCI_sample_data.Rd
