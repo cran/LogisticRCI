@@ -1,0 +1,117 @@
+---
+title: "Getting Started with LogisticRCI"
+author: "Rafael de Andrade Moral, Unai Diaz-Orueta, Javier Oltra-Cucarella"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with LogisticRCI}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+  
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(LogisticRCI)
+```
+
+# Getting Started with `LogisticRCI`
+
+The `LogisticRCI` package is designed to make the calculation of the linear and logistic reliable change index easy and streamlined. In this vignette we give short examples on how to use the package based on a simulated sample dataset with 100 patients.
+
+## `LogisticRCI` installation and load
+
+The `LogisticRCI` package is installed from CRAN and loaded in the typical way. 
+
+```{r, eval = FALSE}
+install.packages("LogisticRCI")
+library("LogisticRCI")
+```
+
+## Computing the Linear and Logistic RCI from a sample dataset
+
+We can load the sample dataset and see the first 6 rows by executing:
+
+```{r}
+data("RCI_sample_data")
+head(RCI_sample_data)
+```
+
+In this dataset, we have baseline scores for a memory test with 15 items calculated for 100 patients (`baseline`), and their follow-up scores (`score`). We have `age`, `education` and `gender` as covariates.
+
+We begin by fitting linear and logistic models.
+
+```{r}
+linear_fit <- lm(score ~ baseline + age + gender + education,
+                 data = RCI_sample_data)
+
+logistic_fit <- glm(cbind(score, 15 - score) ~ baseline + age + gender + education,
+                    family = binomial,
+                    data = RCI_sample_data)
+```
+
+We can explore the significance of the covariate effects in the usual way, using `anova`:
+
+```{r}
+anova(linear_fit)
+
+anova(logistic_fit, test = "Chisq")
+```
+
+To compute the reliable change index we only need to pass the fitted model objects fo the `RCI` function.
+
+```{r}
+linear_RCI <- RCI(linear_fit)
+
+logistic_RCI <- RCI(logistic_fit)
+```
+
+The `RCI` function automatically detects whether we are passing a linear or logistic regression model and performs the appropriate computations internally.
+
+Let's proceed with the Logistic RCI. We can check for normality using, e.g. the Shapiro-Wilk test.
+
+```{r}
+shapiro.test(logistic_RCI)
+```
+
+We don't reject the null hypothesis that the sample may have arisen from a normal distribution. We may now check how many patients are showing reliable decline using a threshold of $-1.64$, representing the lower 5th percentile of the standard normal distribution.
+
+```{r}
+sum(logistic_RCI < -1.64)
+```
+
+We may also identify who these patients are by looking at their IDs.
+
+```{r}
+which(logistic_RCI < -1.64)
+```
+
+So we have that patients 3, 6, 38 and 89 are exhibiting reliable cognitive decline at a 5% level.
+
+## Computing the Linear and Logistic RCI for a single new patient
+
+Suppose we have the scores for a new patient, who is male, aged 68 years old, has 12 years of education, a baseline score of 11 and a follow-up score of 9. We first create a `data.frame` with the new patient information.
+
+```{r}
+new_patient <- data.frame("age" = 68,
+                          "gender" = "male",
+                          "score" = 9,
+                          "baseline" = 11,
+                          "education" = 12)
+```
+
+Now we may calculate the RCI based on either the linear or logistic models we fitted in the previous section without having to re-fit the model to an updated sample by using the `RCI_newpatient` function.
+
+```{r}
+RCI_newpatient(model = linear_fit, new = new_patient)
+RCI_newpatient(model = logistic_fit, new = new_patient)
+```
+
+According to both the linear and logistic models, this new patient does not exhibit reliable cognitive decline at a 5% level.
+
+## References
+
+Moral, R.A., Diaz-Orueta, U., Oltra-Cucarella, J. (PsyArXiv preprint) Logistic versus linear regression-based Reliable Change Index: implications for clinical studies with diverse sample sizes. DOI: 10.31234/osf.io/gq7az

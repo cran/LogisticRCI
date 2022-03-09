@@ -4,3 +4,4 @@ import(stats)
 import(utils)
 
 export(RCI)
+export(RCI_newpatient)

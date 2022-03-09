@@ -5,13 +5,13 @@
 Calculate the Linear or Logistic Regression-Based Reliable Change Index (RCI)
 }
 \description{
-This function calculates the RCI for \code{lm} and binomial \code{glm} objects..
+This function calculates the RCI for \code{lm} and binomial \code{glm} objects.
 }
 \usage{
-RCI(obj)
+RCI(model)
 }
 \arguments{
-  \item{obj}{An \code{lm} or binomial \code{glm} object.}
+  \item{model}{An \code{lm} or binomial \code{glm} object.}
 }
 
 \details{ 
@@ -29,10 +29,10 @@ Rafael A. Moral, Unai Diaz-Orueta and Javier Oltra-Cucarella.
 \examples{
 data(RCI_sample_data)
 
-linear_fit <- lm(score ~ baseline + age + gender + education_level,
+linear_fit <- lm(score ~ baseline + age + gender + education,
                  data = RCI_sample_data)
 
-logistic_fit <- glm(cbind(score, 15 - score) ~ baseline + age + gender + education_level,
+logistic_fit <- glm(cbind(score, 15 - score) ~ baseline + age + gender + education,
                     family = binomial,
                     data = RCI_sample_data)
 
